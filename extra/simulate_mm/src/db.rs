@@ -88,10 +88,9 @@ where
             .as_ref()
             .split(|&c| c == b',')
             .map(|c| {
-                str::from_utf8(c)
-                    .expect("invalid UTF-8 string")
-                    .parse()
-                    .expect("expected positive integer")
+                let str_value = str::from_utf8(c).expect("invalid UTF-8 string");
+                println!("Parsing: {}", str_value);
+                str_value.parse().expect("expected positive integer")
             })
             .collect();
         Self(profile)
