@@ -35,11 +35,24 @@ impl Db {
             let mut modificability_profiles: Vec<ModificabilityProfile> = Vec::new();
         
             let mut line = loop {
-                let line = lines.next().unwrap()?;
-                println!("Reading line: {:?}", line); // Print each line
-                match line[0] {
-                    b'(' | b')' | b'x' | b'.' => modificability_profiles.push(line.into()),
-                    _ => break line,
+                let line_option = lines.next();
+                
+                match line_option {
+                    Some(line) => {
+                        println!("Reading line: {:?}", line); // Print each line
+                        if line.is_empty() {
+                            break line;
+                        }
+                        
+                        match line[0] {
+                            b'(' | b')' | b'x' | b'.' => modificability_profiles.push(line.into()),
+                            _ => break line,
+                        }
+                    }
+                    None => {
+                        println!("No more lines to read."); // Print when no more lines are available
+                        return Err(io::Error::new(io::ErrorKind::UnexpectedEof, "Reached end of file unexpectedly"));
+                    }
                 }
             };
         
