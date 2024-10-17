@@ -31,16 +31,18 @@ impl Db {
         let mut entries = Vec::new();
         while let Some(sequence) = lines.next() {
             let sequence = sequence?.into();
+            println!("Reading sequence: {:?}", sequence); // Print the current sequence
             let mut modificability_profiles: Vec<ModificabilityProfile> = Vec::new();
-
+        
             let mut line = loop {
                 let line = lines.next().unwrap()?;
+                println!("Reading line: {:?}", line); // Print each line
                 match line[0] {
                     b'(' | b')' | b'x' | b'.' => modificability_profiles.push(line.into()),
                     _ => break line,
                 }
             };
-
+        
             let mut profiles = Vec::new();
             for modificability_profile in modificability_profiles {
                 let profile: Profile = line.into();
@@ -49,12 +51,13 @@ impl Db {
                     .iter()
                     .zip(modificability_profile.0)
                     .all(|(&count, modificable)| (count != 0) == modificable));
-
+        
                 profiles.push(profile);
                 line = lines.next().unwrap()?;
+                println!("Reading next line after profile: {:?}", line); // Print the line after profile
             }
+        
             assert!(line.is_empty());
-
             entries.push(Entry { sequence, profiles });
         }
 
